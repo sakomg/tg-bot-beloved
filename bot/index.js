@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf';
 import dotenv from 'dotenv'
 import fetch from 'node-fetch';
 dotenv.config()
-const bot = new Telegraf(process.env.ACCESS_TOKEN);
+const bot = new Telegraf("5140473444:AAE1MYt254Wwc2Tvf-jOmzIYn1Ddf5SGB-k");
 
 // Обработчик начала диалога с ботом
 bot.start((ctx) =>
