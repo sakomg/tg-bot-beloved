@@ -20,11 +20,11 @@ bot.help((ctx) => ctx.reply("Справка в процессе"));
 bot.command("whoami", (ctx) => {
     const { id, username, first_name, last_name } = ctx.from;
     return ctx.replyWithMarkdown(`Кто ты в телеграмме:
-        *id* : ${id}
-        *username* : ${username}
-        *Имя* : ${first_name}
-        *Фамилия* : ${last_name}
-        *chatId* : ${ctx.chat.id}`);
+*id* : ${id}
+*username* : ${username}
+*Имя* : ${first_name}
+*Фамилия* : ${last_name}
+*chatId* : ${ctx.chat.id}`);
 });
 
 bot.command("photo", async (ctx) => {
