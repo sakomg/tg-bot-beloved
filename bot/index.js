@@ -2,7 +2,7 @@ import { Telegraf } from 'telegraf';
 import dotenv from 'dotenv'
 import fetch from 'node-fetch';
 dotenv.config()
-const bot = new Telegraf("5140473444:AAE1MYt254Wwc2Tvf-jOmzIYn1Ddf5SGB-k");
+const bot = new Telegraf(process.env.ACCESS_TOKEN);
 
 // Обработчик начала диалога с ботом
 bot.start((ctx) =>
@@ -20,11 +20,11 @@ bot.help((ctx) => ctx.reply("Справка в процессе"));
 bot.command("whoami", (ctx) => {
     const { id, username, first_name, last_name } = ctx.from;
     return ctx.replyWithMarkdown(`Кто ты в телеграмме:
-*id* : ${id}
-*username* : ${username}
-*Имя* : ${first_name}
-*Фамилия* : ${last_name}
-*chatId* : ${ctx.chat.id}`);
+        *id* : ${id}
+        *username* : ${username}
+        *Имя* : ${first_name}
+        *Фамилия* : ${last_name}
+        *chatId* : ${ctx.chat.id}`);
 });
 
 bot.command("photo", async (ctx) => {
