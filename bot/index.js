@@ -1,13 +1,12 @@
-import { Telegraf } from 'telegraf';
+import { Telegraf } from 'telegraf'
 import dotenv from 'dotenv'
-import fetch from 'node-fetch';
-import schedule from "node-schedule";
+import fetch from 'node-fetch'
+import schedule from "node-schedule"
 dotenv.config()
-const bot = new Telegraf(process.env.ACCESS_TOKEN);
-let job;
-const URL_GIF = 'https://api.giphy.com/v1/gifs/search?q=love&api_key=v1yeUoD3hXAnRRnc6ywNAJzZ1tKC4fei';
-const URL_QUOTE = 'https://favqs.com/api/qotd';
-const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life';
+const bot = new Telegraf(process.env.ACCESS_TOKEN)
+const URL_GIF = 'https://api.giphy.com/v1/gifs/search?q=love&api_key=v1yeUoD3hXAnRRnc6ywNAJzZ1tKC4fei'
+const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life'
+let job
 
 const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
     await bot.telegram.sendMessage(ctx.chat.id, questionMessage, {
@@ -23,7 +22,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 }
 
 bot.command( 'war', async message => {
-    job = schedule.scheduleJob('10 * * * * *', async () => {
+    job = schedule.scheduleJob('30 6 * * * *', async () => {
         await findLoveGif(message)
     });
 });
@@ -40,6 +39,7 @@ async function findLoveGif(message) {
         }
         try {
             await findLoveQuote(message)
+            console.log('test')
         } catch (error) {
             await message.reply('Не нашел фразы 🙄');
         }
@@ -61,20 +61,8 @@ async function findLoveQuote(message) {
         }
     });
     const data = await response.json();
-    console.log(data.results[getRandomIntInclusive(0, data.results.length)].quote)
     await message.reply(data.results[getRandomIntInclusive(0, data.results.length)].quote)
 }
-
-bot.on('callback_query', async (ctx) => {
-    if (ctx.callbackQuery.data === 'yes') {
-        ctx.reply('Хорошего дня 💜');
-    } else if (ctx.callbackQuery.data === 'no') {
-        await findLoveGif(ctx)
-    } else {
-
-    }
-});
-
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
@@ -85,6 +73,7 @@ function getRandomIntInclusive(min, max) {
 bot.command('break', message => {
     if (job) {
         job.cancel()
+        message.reply('Бот остановлен 🤐')
     }
 });
 
@@ -105,9 +94,18 @@ bot.command("cat", async (ctx) => {
     //return ctx.replyWithPhoto(json.file);
 });
 
-// Обработчик простого текста
 bot.on("text", (ctx) => {
     return ctx.reply(ctx.message.text);
+});
+
+bot.on('callback_query', async (ctx) => {
+    if (ctx.callbackQuery.data === 'yes') {
+        ctx.reply('Хорошего дня 💜');
+    } else if (ctx.callbackQuery.data === 'no') {
+        await findLoveGif(ctx)
+    } else {
+        console.log('callback_query error')
+    }
 });
 
 bot.help((ctx) => ctx.reply("Справка в процессе"));
