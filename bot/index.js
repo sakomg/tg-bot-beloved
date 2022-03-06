@@ -11,19 +11,22 @@ let job
 bot.settings(async (ctx) => {
     await ctx.setMyCommands([
         {
-            command: '/foo',
-            description: 'foo description'
+            command: '/war',
+            description: 'Start send gif and quotes'
         },
         {
-            command: '/bar',
-            description: 'bar description'
+            command: '/break',
+            description: 'Stop send gif and quotes'
         },
         {
-            command: '/baz',
-            description: 'baz description'
+            command: '/who',
+            description: 'Info about user'
+        },
+        {
+            command: '/cat',
+            description: 'Get photo random cat'
         }
     ])
-    return ctx.reply('Ok')
 })
 
 const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
@@ -33,6 +36,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
                 [
                     { text: 'Да 😘', callback_data: 'yes' },
                     { text: 'Нет, еще', callback_data: 'no' },
+                    { text: 'Кота!', callback_data: 'cat' },
                 ]
             ],
         },
@@ -40,6 +44,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 }
 
 bot.command( 'war', async message => {
+    console.log(message)
     job = schedule.scheduleJob('30 6 * * * *', async () => {
         await findLoveGif(message)
     });
@@ -106,11 +111,22 @@ bot.command("who", (ctx) => {
 });
 
 bot.command("cat", async (ctx) => {
-    const response = await fetch("https://aws.random.cat/meow");
-    //const data = await response.json();
-    console.log('json', response)
-    //return ctx.replyWithPhoto(json.file);
+    await findCat(ctx)
 });
+
+async function findCat(ctx) {
+    const response = await fetch("https://aws.random.cat/meow");
+    try {
+        if (response.status === 200) {
+            const data = await response.json();
+            return ctx.replyWithPhoto(data.file);
+        } else {
+            return ctx.reply('Сервер перегружен. Пробуй еще');
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 bot.on("text", (ctx) => {
     return ctx.reply(ctx.message.text);
@@ -121,6 +137,8 @@ bot.on('callback_query', async (ctx) => {
         ctx.reply('Хорошего дня 💜');
     } else if (ctx.callbackQuery.data === 'no') {
         await findLoveGif(ctx)
+    } else if (ctx.callbackQuery.data === 'cat') {
+        await findCat(ctx)
     } else {
         console.log('callback_query error')
     }
