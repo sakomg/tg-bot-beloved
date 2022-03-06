@@ -8,6 +8,24 @@ const URL_GIF = 'https://api.giphy.com/v1/gifs/search?q=love&api_key=v1yeUoD3hXA
 const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life'
 let job
 
+bot.settings(async (ctx) => {
+    await ctx.setMyCommands([
+        {
+            command: '/foo',
+            description: 'foo description'
+        },
+        {
+            command: '/bar',
+            description: 'bar description'
+        },
+        {
+            command: '/baz',
+            description: 'baz description'
+        }
+    ])
+    return ctx.reply('Ok')
+})
+
 const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
     await bot.telegram.sendMessage(ctx.chat.id, questionMessage, {
         reply_markup: {
