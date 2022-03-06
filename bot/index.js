@@ -32,7 +32,6 @@ async function findLoveGif(message) {
     message.reply('Loading...🤔')
     const response = await fetch(URL_GIF);
     const data = await response.json();
-    job.cancel()Љ
     if (data.meta.status === 200) {
         try {
             await message.replyWithVideo(data.data[getRandomIntInclusive(0, data.data.length)].images.downsized_medium.url)
