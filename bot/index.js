@@ -23,7 +23,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 }
 
 bot.command( 'war', async message => {
-    job = schedule.scheduleJob('* * * * * *', async () => {
+    job = schedule.scheduleJob('10 * * * * *', async () => {
         await findLoveGif(message)
     });
 });
@@ -32,7 +32,7 @@ async function findLoveGif(message) {
     message.reply('Loading...🤔')
     const response = await fetch(URL_GIF);
     const data = await response.json();
-    job.cancel()
+    job.cancel()Љ
     if (data.meta.status === 200) {
         try {
             await message.replyWithVideo(data.data[getRandomIntInclusive(0, data.data.length)].images.downsized_medium.url)
@@ -41,9 +41,13 @@ async function findLoveGif(message) {
         }
         try {
             await findLoveQuote(message)
-            await sendOptionsKeyboard(message, bot, 'Понравилась гифка? 😀')
         } catch (error) {
             await message.reply('Не нашел фразы 🙄');
+        }
+        try {
+            await sendOptionsKeyboard(message, bot, 'Понравилась гифка? 😀')
+        } catch (error) {
+            await message.reply('Кнопки гг 🙄');
         }
     } else {
         await message.reply('Some problems 🤮');
