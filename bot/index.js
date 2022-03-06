@@ -7,9 +7,10 @@ const bot = new Telegraf(process.env.ACCESS_TOKEN);
 let job;
 const URL_GIF = 'https://api.giphy.com/v1/gifs/search?q=love&api_key=v1yeUoD3hXAnRRnc6ywNAJzZ1tKC4fei';
 const URL_QUOTE = 'https://favqs.com/api/qotd';
+const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life';
 
-const sendOptionsKeyboard = (ctx, bot, questionMessage) => {
-    bot.telegram.sendMessage(ctx.chat.id, questionMessage, {
+const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
+    await bot.telegram.sendMessage(ctx.chat.id, questionMessage, {
         reply_markup: {
             inline_keyboard: [
                 [
@@ -23,7 +24,7 @@ const sendOptionsKeyboard = (ctx, bot, questionMessage) => {
 
 bot.command( 'war', async message => {
     job = schedule.scheduleJob('* * * * * *', async () => {
-        await findLoveGif(message);
+        await findLoveGif(message)
     });
 });
 
@@ -35,7 +36,8 @@ async function findLoveGif(message) {
     if (data.meta.status === 200) {
         try {
             await message.replyWithVideo(data.data[getRandomIntInclusive(0, data.data.length)].images.downsized_medium.url)
-            sendOptionsKeyboard(message, bot, 'Понравилась гифка? 😀')
+            await findLoveQuote(message)
+            await sendOptionsKeyboard(message, bot, 'Понравилась гифка? 😀')
         } catch (error) {
             await message.reply('Не нашел гифки 🙄');
         }
@@ -44,9 +46,21 @@ async function findLoveGif(message) {
     }
 }
 
+async function findLoveQuote(message) {
+    message.reply('Looking for an interesting phrase 🙄')
+    const response = await fetch(URL_LOVE_QUOTE, {
+        headers: {
+            Authorization: `Token ${process.env.PAPER_TOKEN}`
+        }
+    });
+    const data = await response.json();
+    console.log(data.results[getRandomIntInclusive(0, data.results.length)].quote)
+    await message.reply(data.results[getRandomIntInclusive(0, data.results.length)].quote)
+}
+
 bot.on('callback_query', async (ctx) => {
     if (ctx.callbackQuery.data === 'yes') {
-        console.log('ok')
+        ctx.reply('Хорошего дня 💜');
     } else if (ctx.callbackQuery.data === 'no') {
         await findLoveGif(ctx)
     } else {
@@ -66,13 +80,6 @@ bot.command('break', message => {
         job.cancel()
     }
 });
-
-// const job = cron.schedule("* * * * * *", run, {
-//     scheduled: false,
-//     timezone: "Europe/Moscow"
-// });
-//
-// job.start();
 
 bot.command("who", (ctx) => {
     const { id, username, first_name, last_name } = ctx.from;
