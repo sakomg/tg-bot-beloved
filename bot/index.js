@@ -36,10 +36,14 @@ async function findLoveGif(message) {
     if (data.meta.status === 200) {
         try {
             await message.replyWithVideo(data.data[getRandomIntInclusive(0, data.data.length)].images.downsized_medium.url)
+        } catch (error) {
+            await message.reply('Не нашел гифки 🙄');
+        }
+        try {
             await findLoveQuote(message)
             await sendOptionsKeyboard(message, bot, 'Понравилась гифка? 😀')
         } catch (error) {
-            await message.reply('Не нашел гифки 🙄');
+            await message.reply('Не нашел фразы 🙄');
         }
     } else {
         await message.reply('Some problems 🤮');
