@@ -1,12 +1,25 @@
 import { Telegraf } from 'telegraf'
 import dotenv from 'dotenv'
 import fetch from 'node-fetch'
-import schedule from "node-schedule"
+import schedule from 'node-schedule'
+import express from 'express'
+const expressApp = express()
 dotenv.config()
 const bot = new Telegraf(process.env.ACCESS_TOKEN)
 const URL_GIF = `https://api.giphy.com/v1/gifs/search?q=love&api_key=${process.env.GIF_TOKEN}`
 const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life'
 let job
+
+const port = process.env.PORT || 3000
+expressApp.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+expressApp.listen(port, () => {
+    console.log(`Listening on port ${port}`)
+})
+
+bot.hears(/./, (ctx) => ctx.reply('Hello'))
+bot.startPolling()
 
 bot.settings(async (ctx) => {
     await ctx.setMyCommands([
