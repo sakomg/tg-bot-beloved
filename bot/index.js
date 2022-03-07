@@ -18,7 +18,12 @@ expressApp.listen(port, () => {
     console.log(`Listening on port ${port}`)
 })
 
-bot.hears(/./, (ctx) => ctx.reply('Hello'))
+bot.hears(/./, (ctx) => {
+    ctx.reply('Hello')
+    job = schedule.scheduleJob('0 9 * * *', async () => {
+        await findLoveGif(ctx)
+    });
+})
 bot.startPolling()
 
 bot.settings(async (ctx) => {
