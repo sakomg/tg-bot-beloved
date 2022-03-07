@@ -45,7 +45,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 
 bot.command( 'run', async message => {
     message.reply('Бот запущен!');
-    job = schedule.scheduleJob('10 2 * * *', async () => {
+    job = schedule.scheduleJob('0 9 * * *', async () => {
         await findLoveGif(message)
     });
 });
