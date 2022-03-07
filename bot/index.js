@@ -62,7 +62,6 @@ async function findLoveGif(message) {
         }
         try {
             await findLoveQuote(message)
-            console.log('test')
         } catch (error) {
             await message.reply('Не нашел фразы 🙄');
         }
