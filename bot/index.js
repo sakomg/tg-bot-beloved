@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 import schedule from "node-schedule"
 dotenv.config()
 const bot = new Telegraf(process.env.ACCESS_TOKEN)
-const URL_GIF = 'https://api.giphy.com/v1/gifs/search?q=love&api_key=v1yeUoD3hXAnRRnc6ywNAJzZ1tKC4fei'
+const URL_GIF = `https://api.giphy.com/v1/gifs/search?q=love&api_key=${process.env.GIF_TOKEN}`
 const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life'
 let job
 
@@ -51,7 +51,7 @@ bot.command( 'run', async message => {
 });
 
 async function findLoveGif(message) {
-    message.reply('Loading...🤔')
+    message.reply('Доброе утро 💓')
     const response = await fetch(URL_GIF);
     const data = await response.json();
     if (data.meta.status === 200) {
@@ -77,7 +77,6 @@ async function findLoveGif(message) {
 }
 
 async function findLoveQuote(message) {
-    message.reply('Looking for an interesting phrase 🙄')
     const response = await fetch(URL_LOVE_QUOTE, {
         headers: {
             Authorization: `Token ${process.env.PAPER_TOKEN}`
