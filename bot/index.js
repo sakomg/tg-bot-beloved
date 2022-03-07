@@ -11,7 +11,7 @@ let job
 bot.settings(async (ctx) => {
     await ctx.setMyCommands([
         {
-            command: '/war',
+            command: '/run',
             description: 'Start send gif and quotes'
         },
         {
@@ -43,9 +43,9 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
     })
 }
 
-bot.command( 'war', async message => {
-    console.log(message)
-    job = schedule.scheduleJob('30 6 * * * *', async () => {
+bot.command( 'run', async message => {
+    message.reply('Бот запущен!');
+    job = schedule.scheduleJob('0 2 * * *', async () => {
         await findLoveGif(message)
     });
 });
