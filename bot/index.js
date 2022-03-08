@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import fetch from 'node-fetch'
 import schedule from 'node-schedule'
 import express from 'express'
-import EMOJI from "./emoji";
+import { EMOJI } from './emoji.js'
 const expressApp = express()
 dotenv.config()
 const bot = new Telegraf(process.env.ACCESS_TOKEN)
@@ -55,7 +55,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 
 bot.command( 'run', async message => {
     message.reply('Бот запущен!');
-    job = schedule.scheduleJob('0 9 * * *', async () => {
+    job = schedule.scheduleJob('30 * * * *', async () => {
         await findLoveGif(message)
     });
 });

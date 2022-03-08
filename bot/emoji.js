@@ -1,4 +1,4 @@
-const EMOJI = [
+export const EMOJI = [
     '😻',
     '😘',
     '😍',
@@ -14,4 +14,3 @@ const EMOJI = [
     '💕',
     '❤️'
 ]
-export default EMOJI;
