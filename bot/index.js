@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import fetch from 'node-fetch'
 import schedule from 'node-schedule'
 import express from 'express'
+import EMOJI from "./emoji";
 const expressApp = express()
 dotenv.config()
 const bot = new Telegraf(process.env.ACCESS_TOKEN)
@@ -64,7 +65,7 @@ bot.command( 'run', async message => {
 });
 
 async function findLoveGif(message) {
-    message.reply('Доброе утро 💓')
+    message.reply(`Доброе утро ${EMOJI[getRandomIntInclusive(0, EMOJI.length)]}`)
     const response = await fetch(URL_GIF);
     const data = await response.json();
     if (data.meta.status === 200) {
