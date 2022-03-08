@@ -18,20 +18,11 @@ expressApp.listen(port, () => {
     console.log(`Listening on port ${port}`)
 })
 
-bot.hears(/./, (ctx) => {
-    ctx.reply('Hello')
-    job = schedule.scheduleJob('0 9 * * *', async () => {
-        await findLoveGif(ctx)
-    });
-})
-bot.startPolling()
+process.once('SIGINT', () => bot.stop('SIGINT'))
+process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
 bot.settings(async (ctx) => {
     await ctx.setMyCommands([
-        {
-            command: '/run',
-            description: 'Start send gif and quotes'
-        },
         {
             command: '/break',
             description: 'Stop send gif and quotes'
@@ -43,6 +34,10 @@ bot.settings(async (ctx) => {
         {
             command: '/cat',
             description: 'Get photo random cat'
+        },
+        {
+            command: '/run',
+            description: 'Start send gif and quotes'
         }
     ])
 })
@@ -145,7 +140,7 @@ async function findCat(ctx) {
 }
 
 bot.on("text", (ctx) => {
-    return ctx.reply(ctx.message.text);
+    return ctx.reply(`${ctx.message.text} не поддерживается 😔`);
 });
 
 bot.on('callback_query', async (ctx) => {
