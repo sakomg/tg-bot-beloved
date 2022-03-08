@@ -39,9 +39,15 @@ bot.settings(async (ctx) => {
         {
             command: '/cat',
             description: 'Get photo random cat'
+        },
+        {
+            command: '/process',
+            description: 'Just only process'
         }
     ])
 })
+
+bot.start((ctx) => ctx.reply('Welcome'))
 
 const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
     await bot.telegram.sendMessage(ctx.chat.id, questionMessage, {
@@ -58,11 +64,23 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 }
 
 bot.command( 'run', async message => {
-    message.reply('Бот запущен!');
-    job = schedule.scheduleJob('30 6 * * * *', async () => {
+    message.reply(`Бот запущен!`);
+    const rule = new schedule.RecurrenceRule()
+    settingRule(rule)
+    job = schedule.scheduleJob(rule, async () => {
         await findLoveGif(message)
-    });
-});
+    })
+})
+
+function settingRule(rule) {
+    rule.hour = process.env.HOUR
+    rule.minute = process.env.MINUTE
+    rule.tz = 'Etc/UTC';
+}
+
+bot.command('process', async message => {
+    await findLoveGif(message)
+})
 
 async function findLoveGif(message) {
     message.reply(`Доброе утро ${EMOJI[getRandomIntInclusive(0, EMOJI.length)]}`)
