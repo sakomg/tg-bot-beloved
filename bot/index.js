@@ -25,6 +25,10 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 bot.settings(async (ctx) => {
     await ctx.setMyCommands([
         {
+            command: '/run',
+            description: 'Start send gif and quotes'
+        },
+        {
             command: '/break',
             description: 'Stop send gif and quotes'
         },
@@ -55,7 +59,7 @@ const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
 
 bot.command( 'run', async message => {
     message.reply('Бот запущен!');
-    job = schedule.scheduleJob('30 * * * *', async () => {
+    job = schedule.scheduleJob('30 6 * * * *', async () => {
         await findLoveGif(message)
     });
 });
