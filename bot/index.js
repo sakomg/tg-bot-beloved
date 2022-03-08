@@ -35,10 +35,6 @@ bot.settings(async (ctx) => {
         {
             command: '/cat',
             description: 'Get photo random cat'
-        },
-        {
-            command: '/run',
-            description: 'Start send gif and quotes'
         }
     ])
 })
