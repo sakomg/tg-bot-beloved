@@ -25,10 +25,6 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 bot.settings(async (ctx) => {
     await ctx.setMyCommands([
         {
-            command: '/run',
-            description: 'Start send gif and quotes'
-        },
-        {
             command: '/break',
             description: 'Stop send gif and quotes'
         },
@@ -43,7 +39,11 @@ bot.settings(async (ctx) => {
         {
             command: '/process',
             description: 'Just only process'
-        }
+        },
+        {
+            command: '/run',
+            description: 'Start send gif and quotes'
+        },
     ])
 })
 
