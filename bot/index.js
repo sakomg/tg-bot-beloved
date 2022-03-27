@@ -73,8 +73,8 @@ bot.command( 'run', async message => {
 })
 
 function settingRule(rule) {
-    rule.hour = process.env.HOUR
-    rule.minute = process.env.MINUTE
+    rule.hour = parseInt(process.env.HOUR)
+    rule.minute = parseInt(process.env.MINUTE)
     rule.tz = 'Etc/UTC';
 }
 
