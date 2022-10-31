@@ -1,23 +1,18 @@
-import { Telegraf } from 'telegraf'
-import dotenv from 'dotenv'
-import fetch from 'node-fetch'
-import schedule from 'node-schedule'
-import express from 'express'
-import { EMOJI } from './emoji.js'
-const expressApp = express()
-dotenv.config()
-const bot = new Telegraf(process.env.ACCESS_TOKEN)
-const URL_GIF = `https://api.giphy.com/v1/gifs/search?q=love&api_key=${process.env.GIF_TOKEN}`
-const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life'
-let job
+import { Telegraf } from 'telegraf';
+import {} from 'dotenv/config';
+import fetch from 'node-fetch';
+import schedule from 'node-schedule';
+import express from 'express';
+import { EMOJI } from './emoji.js';
+const expressApp = express();
+const bot = new Telegraf(process.env.ACCESS_TOKEN);
+const URL_GIF = `https://api.giphy.com/v1/gifs/search?q=love&api_key=${process.env.GIF_TOKEN}`;
+const URL_LOVE_QUOTE = 'https://api.paperquotes.com/apiv1/quotes/?tags=love,life';
+let job;
 
 const port = process.env.PORT || 3000
-expressApp.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-expressApp.listen(port, () => {
-    console.log(`Listening on port ${port}`)
-})
+
+expressApp.listen(port, () => console.log(`Listening on port ${port}`));
 
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
@@ -36,71 +31,54 @@ bot.settings(async (ctx) => {
             command: '/cat',
             description: 'Get photo random cat'
         },
-        {
-            command: '/process',
-            description: 'Just only process'
-        },
-        {
-            command: '/run',
-            description: 'Start send gif and quotes'
-        },
     ])
 })
-
-bot.start((ctx) => ctx.reply('Welcome'))
 
 const sendOptionsKeyboard = async (ctx, bot, questionMessage) => {
     await bot.telegram.sendMessage(ctx.chat.id, questionMessage, {
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: 'Да 😘', callback_data: 'yes' },
-                    { text: 'Нет, еще', callback_data: 'no' },
-                    { text: 'Кота!', callback_data: 'cat' },
+                    { text: 'Yes 😘', callback_data: 'yes' },
+                    { text: 'No', callback_data: 'no' },
+                    { text: 'Cat!', callback_data: 'cat' },
                 ]
             ],
         },
     })
 }
 
-bot.command( 'run', async message => {
-    message.reply(`Бот запущен!`);
-    const rule = new schedule.RecurrenceRule()
-    settingRule(rule)
-    job = schedule.scheduleJob(rule, async () => {
-        await findLoveGif(message)
-    })
-})
-
-function settingRule(rule) {
-    rule.hour = parseInt(process.env.HOUR)
-    rule.minute = parseInt(process.env.MINUTE)
-    rule.tz = 'Etc/UTC';
+function run(message) {
+    const rule = new schedule.RecurrenceRule();
+    rule.hour = parseInt(process.env.HOUR);
+    rule.minute = parseInt(process.env.MINUTE);
+    rule.tz = 'Europe/Minsk';
+    findLoveGif(message);
+    job = schedule.scheduleJob(rule, function() {
+        findLoveGif(message)
+    });
+    console.log('scheduled', job)
 }
 
-bot.command('process', async message => {
-    await findLoveGif(message)
-})
-
 async function findLoveGif(message) {
-    message.reply(`Доброе утро ${EMOJI[getRandomIntInclusive(0, EMOJI.length)]}`)
+    message.reply(`Good morning ${EMOJI[getRandomIntInclusive(0, EMOJI.length)]}`)
     const response = await fetch(URL_GIF);
     const data = await response.json();
     if (data.meta.status === 200) {
         try {
             await message.replyWithVideo(data.data[getRandomIntInclusive(0, data.data.length)].images.downsized_medium.url)
         } catch (error) {
-            await message.reply('Не нашел гифки 🙄');
+            await message.reply('Not found gif 🙄');
         }
         try {
             await findLoveQuote(message)
         } catch (error) {
-            await message.reply('Не нашел фразы 🙄');
+            await message.reply('Not found phrase 🙄');
         }
         try {
-            await sendOptionsKeyboard(message, bot, 'Понравилась гифка? 😀')
+            await sendOptionsKeyboard(message, bot, 'Did you like the gif? 😀')
         } catch (error) {
-            await message.reply('Кнопки гг 🙄');
+            await message.reply('Keyboard failure 🙄');
         }
     } else {
         await message.reply('Some problems 🤮');
@@ -126,18 +104,18 @@ function getRandomIntInclusive(min, max) {
 bot.command('break', message => {
     if (job) {
         job.cancel()
-        message.reply('Бот остановлен 🤐')
+        message.reply('Bot stoped 🤐')
     }
 });
 
 bot.command("who", (ctx) => {
     const { id, username, first_name, last_name } = ctx.from;
-    return ctx.replyWithMarkdown(`Кто ты в телеграмме:
-*id* : ${id}
-*username* : ${username}
-*Имя* : ${first_name}
-*Фамилия* : ${last_name}
-*chatId* : ${ctx.chat.id}`);
+    return ctx.replyWithMarkdown(`Who?:
+*Id* : ${id}
+*Username* : ${username}
+*First Name* : ${first_name}
+*Last Name* : ${last_name}
+*Chat Id* : ${ctx.chat.id}`);
 });
 
 bot.command("cat", async (ctx) => {
@@ -151,20 +129,24 @@ async function findCat(ctx) {
             const data = await response.json();
             return ctx.replyWithPhoto(data.file);
         } else {
-            return ctx.reply('Сервер перегружен. Пробуй еще');
+            return ctx.reply('The server is overloaded. Try again');
         }
     } catch (error) {
         console.error(error)
     }
 }
 
+bot.start((ctx) => {
+    run(ctx);
+})
+
 bot.on("text", (ctx) => {
-    return ctx.reply(`${ctx.message.text} не поддерживается 😔`);
+    return ctx.reply(`${ctx.message.text} not supported 😔`);
 });
 
 bot.on('callback_query', async (ctx) => {
     if (ctx.callbackQuery.data === 'yes') {
-        ctx.reply('Хорошего дня 💜');
+        ctx.reply('Have a good day 💜');
     } else if (ctx.callbackQuery.data === 'no') {
         await findLoveGif(ctx)
     } else if (ctx.callbackQuery.data === 'cat') {
@@ -174,6 +156,6 @@ bot.on('callback_query', async (ctx) => {
     }
 });
 
-bot.help((ctx) => ctx.reply("Справка в процессе"));
+bot.help((ctx) => ctx.reply("Help in progress"));
 
 bot.launch();
