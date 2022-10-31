@@ -57,7 +57,6 @@ function run(message) {
     job = schedule.scheduleJob(rule, function() {
         findLoveGif(message)
     });
-    console.log('scheduled', job)
 }
 
 async function findLoveGif(message) {
